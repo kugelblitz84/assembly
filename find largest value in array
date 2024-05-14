@@ -1,0 +1,77 @@
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    ARRAY DB 10 DUP(?)
+    LENGTH DB 10
+    LARGEST DB ?
+    MSG1 DB ' Enter a number: $'
+    MSG2 DB ' The largest number is: $'
+    NL DB 13,10,'$'
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    MOV SI, OFFSET ARRAY
+    MOV AL, [SI]
+    MOV LARGEST, AL
+
+    MOV CX, WORD PTR LENGTH
+    MOV SI, OFFSET ARRAY
+GET_ELEMENTS:
+    LEA DX, MSG1
+    MOV AH, 09H
+    INT 21H
+
+    MOV AH, 01H
+    INT 21H
+    
+    ;MOV AH,09H
+    ;MOV DX,OFFSET NL
+    ;INT 21H
+
+    MOV [SI], AL
+
+    INC SI
+
+    LOOP GET_ELEMENTS
+
+    MOV SI, OFFSET ARRAY
+    MOV CX, WORD PTR LENGTH
+FIND_LARGEST:
+    
+    MOV AL, [SI]
+    CMP AL, LARGEST
+    JA UPDATE_LARGEST
+
+    
+    INC SI
+
+    
+    LOOP FIND_LARGEST
+
+    
+    LEA DX, MSG2
+    MOV AH, 09H
+    INT 21H
+
+    MOV DL, LARGEST
+    MOV AH, 02H
+    INT 21H
+
+    MOV AH, 4CH
+    INT 21H
+
+UPDATE_LARGEST:
+    
+    MOV LARGEST, AL
+
+    
+    INC SI
+
+    
+    LOOP FIND_LARGEST
+MAIN ENDP
+END MAIN
